@@ -8,7 +8,7 @@ common.optimization = {
     new TerserPlugin({
       terserOptions: {
         compress: {
-          pure_funcs: ['console.info'], // drops sideffects of these
+          pure_funcs: ['console.debug','console.info'], // drops sideffects of these
         },
       },
     }),

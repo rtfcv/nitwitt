@@ -20,6 +20,11 @@
     {
       "matches": ["*://*/*"],
       "js": ["content-script.js"]
+    },
+    {
+      "matches": ["https://nitter.fly.dev/*"],
+      "all_frames": true,
+      "js": ["nitter_cs.js"]
     }
   ],
   "declarative_net_request": {

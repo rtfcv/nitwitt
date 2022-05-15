@@ -13,6 +13,10 @@ module.exports = {
       import: path.resolve(__dirname, './src/content-script.ts'),
       filename: 'content-script.js',
     },
+    nitter_cs: {
+      import: path.resolve(__dirname, './src/nitter_cs.ts'),
+      filename: 'nitter_cs.js',
+    },
   },
 
   output: {

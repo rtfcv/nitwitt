@@ -8,10 +8,15 @@
 
 const tabHook=(tabId:number, changeInfo:any, tabInfo:any)=>{
     if (tabInfo.url.includes('twitter.com/')){
-        chrome.tabs.update(tabId, {url:tabInfo.url.replace(/http.?:\/\/.*.twitter.com\//,'https://nitter.net/')},).then(inp=>{
+        let newUrl = tabInfo.url.replace(/http.?:\/\/.*\.?twitter.com\/?/,'https://nitter.net/');
+        newUrl = newUrl.replace(/\?.*$/, '');
+        console.assert(tabInfo.url != newUrl);
+
+        chrome.tabs.update(tabId, {url: newUrl},).then(inp=>{
             console.log(inp);
         });
-        console.log('a twitter tab', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo});
+
+        console.log('a twitter tab', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo}, '\nopening:', newUrl);
     }else{
         console.info('tabInfo', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo});
     };
