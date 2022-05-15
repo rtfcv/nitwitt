@@ -32,3 +32,12 @@ tailwindcss is not currently used really...
 }
 ```
 
+also requires `7zip` for zipping release file automatically.
+
+## build instructions
+
+```bash
+npm run build  # for debug
+npm run release  # for release build
+```
+
