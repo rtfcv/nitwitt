@@ -1,49 +1,54 @@
-function clean(hoge:any){return JSON.parse(JSON.stringify(hoge))}
+var id = '';
 
-var id = -1;
+chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
+    // return if this is toplevel window
+    if (window.parent === window){return;};
 
-window.addEventListener("message", (event)=>{
-    console.info(event.data);
+    // return if this is not somewhere in nitterinstance list
+    const docLoc = document.location.toString();
+    if (!rcvd.nitterInstances.some((e:any)=>docLoc.includes(e))){return;}
 
-    if(event.data.msg === 'giveMeSize'){
-        // change min-height of media element
-        var body_ = document.body;
-        var html_ = document.documentElement;
+    const clean = (hoge:any)=>{return JSON.parse(JSON.stringify(hoge))}
 
-        var height = Math.max(
-            body_.scrollHeight,
-            body_.offsetHeight,
-            html_.clientHeight,
-            html_.scrollHeight,
-            html_.offsetHeight
-        );
+    const eventHandler=(event:any)=>{
+        console.info(event.data);
 
-        const tlItem = document.getElementsByClassName('timeline-item');
+        if(event.data.msg === 'giveMeSize'){
+            // change min-height of media element
+            var body_ = document.body;
+            var html_ = document.documentElement;
+            var height = Math.max(body_.scrollHeight,body_.offsetHeight,html_.clientHeight,html_.scrollHeight,html_.offsetHeight);
 
-        id = event.data.msg.id;
-        window.parent.postMessage({msg:'resizeMe', id:event.data.id, height:tlItem[0].scrollHeight}, '*');
+            const tlItem = document.getElementsByClassName('timeline-item');
+
+            id = event.data.msg.id;
+            window.parent.postMessage({msg:'resizeMe', id:event.data.id, height:tlItem[0].scrollHeight}, '*');
+        }
     }
-});
 
-// this crosses origin and errors out
-// window.parent.addEventListener("message", (event)=>{
-//     console.info('parent received: ', event.data);
-// });
 
-function loaded(){
-    var body_ = document.body;
-    var html_ = document.documentElement;
-    var height = Math.max( body_.scrollHeight, body_.offsetHeight, html_.clientHeight, html_.scrollHeight, html_.offsetHeight );
+    window.addEventListener("message", eventHandler);
 
-    // do something with target origin
-    window.parent.postMessage(clean({
-        msg: "loaded",
-        url:window.location.toString(),
-        height:height,
-        doc:document,
-        id:id
-    }), '*');
-}
+    // this crosses origin and errors out
+    // window.parent.addEventListener("message", (event)=>{
+    //     console.info('parent received: ', event.data);
+    // });
 
-window.addEventListener('load', loaded);
+    // const loaded = ()=>{
+    //     var body_ = document.body;
+    //     var html_ = document.documentElement;
+    //     var height = Math.max( body_.scrollHeight, body_.offsetHeight, html_.clientHeight, html_.scrollHeight, html_.offsetHeight );
 
+    //     // do something with target origin
+    //     window.parent.postMessage(clean({
+    //         msg: "loaded",
+    //         url:window.location.toString(),
+    //         height:height,
+    //         doc:document,
+    //         id:id
+    //     }), '*');
+    //     window.removeEventListener('load', loaded);
+    // }
+
+    // window.addEventListener('load', loaded);
+})

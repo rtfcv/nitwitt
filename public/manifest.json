@@ -22,7 +22,7 @@
       "js": ["content-script.js"]
     },
     {
-      "matches": ["https://nitter.fly.dev/*"],
+      "matches": ["*://*/*"],
       "all_frames": true,
       "js": ["nitter_cs.js"]
     }
@@ -35,5 +35,8 @@
         "path": "rules.json"
       }
     ]
+  },
+  "options_ui": {
+    "page": "extensionPage/extensionPage.html"
   }
 }
