@@ -58,7 +58,7 @@ for(let tweetElem of tweetList){
   tiframe.setAttribute('id', id);
   tiframe.setAttribute('src', newSrc);
   tiframe.setAttribute('class', 'twitter-tweet');
-  tiframe.setAttribute('style', 'width:100%;height:fit-content;');
+  tiframe.setAttribute('style', 'width:100%;height:600px;');
   tweetElem.replaceWith(tiframe);
   tiframe.onload = resizeIt(id);
 

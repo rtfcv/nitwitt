@@ -18,8 +18,10 @@ window.addEventListener("message", (event)=>{
             html_.offsetHeight
         );
 
+        const tlItem = document.getElementsByClassName('timeline-item');
+
         id = event.data.msg.id;
-        window.parent.postMessage({msg:'resizeMe', id:event.data.id, height:height}, '*');
+        window.parent.postMessage({msg:'resizeMe', id:event.data.id, height:tlItem[0].scrollHeight}, '*');
     }
 });
 
