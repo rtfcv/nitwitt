@@ -8,21 +8,26 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     const docLoc = document.location.toString();
     if (!rcvd.nitterInstances.some((e:any)=>docLoc.includes(e))){return;}
 
-    const clean = (hoge:any)=>{return JSON.parse(JSON.stringify(hoge))}
+    // const clean = (hoge:any)=>{return JSON.parse(JSON.stringify(hoge))}
 
     const eventHandler=(event:any)=>{
         console.info(event.data);
 
         if(event.data.msg === 'giveMeSize'){
             // change min-height of media element
-            var body_ = document.body;
-            var html_ = document.documentElement;
-            var height = Math.max(body_.scrollHeight,body_.offsetHeight,html_.clientHeight,html_.scrollHeight,html_.offsetHeight);
+            // var body_ = document.body;
+            // var html_ = document.documentElement;
+            // var height = Math.max(body_.scrollHeight,body_.offsetHeight,html_.clientHeight,html_.scrollHeight,html_.offsetHeight);
 
-            const tlItem = document.getElementsByClassName('timeline-item');
-
-            id = event.data.msg.id;
-            window.parent.postMessage({msg:'resizeMe', id:event.data.id, height:tlItem[0].scrollHeight}, '*');
+            try{
+              const tlItem = document.getElementsByClassName('timeline-item');
+              tlItem[0].scrollHeight
+              id = event.data.msg.id;
+              window.parent.postMessage({msg:'resizeMe', id:event.data.id, height:tlItem[0].scrollHeight}, '*');
+            }catch(e){
+              console.warn('something went wrong when getting height of timeline-item', e);
+              window.parent.postMessage({msg:'resizeMe', id:event.data.id, height:undefined}, '*');
+            }
         }
     }
 

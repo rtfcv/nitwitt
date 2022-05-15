@@ -18,7 +18,8 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
       if (event.data.msg === 'resizeMe'){
           console.info('firing resizeMe Event');
           const iframeElem = document.getElementById(event.data.id) as HTMLIFrameElement;
-          iframeElem.style.height = (1.05 * event.data.height).toString() + 'px';
+          iframeElem.style.height = (8 + Number(event.data.height)).toString() + 'px';
+          if (event.data.height === undefined){iframeElem.style.height=''};
       }
   }, false);
   
@@ -28,7 +29,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
       return ()=>{
           console.info(id, 'loaded');
           // iframeElem.style.height = '600px';
-          iframeElem.contentWindow!.postMessage({msg:'giveMeSize', id:id}, '*');// this message is really not being received what so ever
+          iframeElem.contentWindow!.postMessage({msg:'giveMeSize', id:id}, '*');
       }
   }
   
@@ -65,8 +66,9 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     tiframe.setAttribute('src', newSrc);
     tiframe.setAttribute('class', 'twitter-tweet');
     // tiframe.setAttribute('style', 'width:100%;');
-    tiframe.setAttribute('style', 'border-radius: 10px;; border: 2px solid gray; width:100%; height:600px');
+    tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%; height:600px');
     tweetElem.replaceWith(tiframe);
+    // tiframe.onload = resizeIt(id);
     tiframe.onload = resizeIt(id);
   
     // replace tweet BlockQuote with the above iframe
