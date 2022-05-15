@@ -1,0 +1,34 @@
+{
+  "name": "twiBlocker",
+  "description": "twiBlocker",
+  "version": "0.0",
+  "manifest_version": 3,
+  "permissions": [
+      "contextMenus",
+      "storage",
+      "tabs",
+      "declarativeNetRequest",
+      "alarms"
+  ],
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "action": {
+      "default_title": "Click me to open a new window"
+  },
+ "content_scripts": [
+    {
+      "matches": ["*://*/*"],
+      "js": ["content-script.js"]
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}
