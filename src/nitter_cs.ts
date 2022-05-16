@@ -31,13 +31,11 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
             }catch(e){
               height = undefined;
               console.warn('something went wrong when getting height of timeline-item', e);
-            } 
+            }
 
             window.parent.postMessage({msg:'resizeMe', id:id, height:height}, '*');
         }
     }
     window.addEventListener("message", eventHandler);
-    window.dispatchEvent(new Event('load'));
-
-    // window.addEventListener("resize", eventHandler);
+    // window.dispatchEvent(new Event('load'));
 })
