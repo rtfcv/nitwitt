@@ -2,8 +2,9 @@ import {
     readConfig,
     writeConfig,
 } from './configs'
+
 // chrome.action.onClicked.addListener((tab :chrome.tabs.Tab)=>{
-//     console.log("tabs opening from: \n" + JSON.stringify(tab, null, 2));
+//     console.info("tabs opening from: \n" + JSON.stringify(tab, null, 2));
 //     chrome.tabs.create({
 //         url: chrome.runtime.getURL('extensionPage/extensionPage.html'),
 //         pinned: true
@@ -23,12 +24,12 @@ const tabHook=(tabId:number, changeInfo:any, tabInfo:any)=>{
         console.assert(tabInfo.url != newUrl);
 
         chrome.tabs.update(tabId, {url: newUrl},).then(inp=>{
-            console.log(inp);
+            console.debug('updated tab', inp);
         });
 
-        console.log('a twitter tab', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo}, '\nopening:', newUrl);
+        console.info('a twitter tab', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo}, '\nopening:', newUrl);
     }else{
-        console.info('tabInfo', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo});
+        console.debug('tabInfo', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo});
     };
 };
 
@@ -51,13 +52,13 @@ chrome.runtime.onMessage.addListener(function (msgMap, sender, sendResponse) {
     }
 
     console.assert(typeof sendResponse === 'function')
-    console.log({log:"sendResponce received", msg:msgMap, type: typeof sendResponse})
+    console.debug({log:"sendResponce received", msg:msgMap, type: typeof sendResponse})
 
     switch (msgMap.msg){
         case 'writeConfig':  writeConfig(msgMap.config, sendResponse); return reloadConfigs();
         case 'readConfig':   readConfig(sendResponse); return true; // this should be implemented in in pages
         default:
-            console.log('msg: ' + msgMap.msg + ', is undefined')
+            console.debug('msg: ' + msgMap.msg + ', is undefined')
             console.assert(msgMap.msg == 'anyOfTheDefinedMessage');
     }
     // we do not want code to reach here

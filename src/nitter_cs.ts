@@ -30,7 +30,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
               height = tlItem[0].scrollHeight
             }catch(e){
               height = undefined;
-              console.warn('something went wrong when getting height of timeline-item', e);
+              console.log('something went wrong when getting height of timeline-item', e);
             }
 
             window.parent.postMessage({msg:'resizeMe', id:id, height:height}, '*');

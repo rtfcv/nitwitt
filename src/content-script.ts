@@ -24,6 +24,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
           console.info('firing resizeMe Event');
           const iframeElem = document.getElementById(event.data.id) as HTMLIFrameElement;
           iframeElem.style.height = (8 + Number(event.data.height)).toString() + 'px';
+          iframeElem.style.display = '';
           if (event.data.height === undefined){iframeElem.style.height=''};
 
           // raise loaded frag now
@@ -105,7 +106,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     resized[id] = false;  // set initial state
     tiframe.setAttribute('id', id);
     tiframe.setAttribute('class', 'twitter-tweet');
-    tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%; height:600px');
+    tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%; height:600px; display:hidden !important;');
 
     tweetElem.replaceWith(tiframe);
     tiframe.onload = resizeIt(id);  // this sometimes seem not to fire

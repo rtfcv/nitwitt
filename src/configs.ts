@@ -21,9 +21,9 @@ function sanitizeConfigMap(input:any) {
 function readConfig(callbackFunc: any) {
     chrome.storage.local.get('config', (result) => {
         // DO FORMAT CHECK HERE
-        console.log('Reading Config', result);
+        console.debug('Reading Config', result);
         const cleanConfig = sanitizeConfigMap(result.config);
-        console.log(cleanConfig);
+        console.debug('sanitized config is', cleanConfig);
         callbackFunc(sanitizeConfigMap(result.config));
     });
     return true;
