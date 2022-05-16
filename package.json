@@ -1,5 +1,5 @@
 {
-  "name": "sample-extension",
+  "name": "nitwitt",
   "version": "0.0.0",
   "description": "",
   "main": "index.js",
@@ -8,6 +8,8 @@
     "build-win": "tailwindcss -i ./src/style.css -o ./dist/style.css && webpack",
     "prod-build": "NODE_ENV=production  tailwindcss -i ./src/style.css -o ./dist/style.css && webpack --config webpack.config.prod.js",
     "prod-build-win": "set NODE_ENV=production && tailwindcss -i ./src/style.css -o ./dist/style.css && webpack --config webpack.config.prod.js",
+    "release": "set NODE_ENV=production && tailwindcss -i ./src/style.css -o ./release/style.css && webpack --config webpack.config.release.js && 7z a ./nitwitt.zip ./release",
+    "release-win": "set NODE_ENV=production && tailwindcss -i ./src/style.css -o ./release/style.css && webpack --config webpack.config.release.js && 7z a .\\nitwitt.zip .\\release",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "rtfcv",
