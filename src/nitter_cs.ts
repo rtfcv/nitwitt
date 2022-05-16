@@ -1,4 +1,4 @@
-var id = '';
+var id:string|undefined = undefined;
 
 chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     // return if this is toplevel window
@@ -9,23 +9,24 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     if (!rcvd.nitterInstances.some((e:any)=>docLoc.includes(e))){return;}
 
     // const clean = (hoge:any)=>{return JSON.parse(JSON.stringify(hoge))}
-    const eventHandler=(event:any)=>{
-        console.info(event.data);
+    const msgHandler=(event:any)=>{
+        const payload = event.data;
+        console.info(payload);
 
-        if(event.data.msg === 'giveMeSize'){
-            // change min-height of media element
+        if(payload.msg === 'giveMeSize'){
+            // // change min-height of media element
             // var body_ = document.body;
             // var html_ = document.documentElement;
             // var height = Math.max(body_.scrollHeight,body_.offsetHeight,html_.clientHeight,html_.scrollHeight,html_.offsetHeight);
-            id = event.data.id;
+
+            id = payload.id;
             console.assert(id !== undefined);
 
-            let height = undefined;
-
-
+            let height:number|undefined = undefined; // initialize
             try{
               // the item should have this id
               const tlItem = document.getElementsByClassName('timeline-item');
+
               // this can error out too
               height = tlItem[0].scrollHeight
             }catch(e){
@@ -36,6 +37,6 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
             window.parent.postMessage({msg:'resizeMe', id:id, height:height}, '*');
         }
     }
-    window.addEventListener("message", eventHandler);
+    window.addEventListener("message", msgHandler);
     // window.dispatchEvent(new Event('load'));
 })

@@ -27,30 +27,26 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
           iframeElem.style.display = '';
           if (event.data.height === undefined){iframeElem.style.height=''};
 
-          // raise loaded frag now
+          // raise resized frag now
           resized[event.data.id] = true;
       }
   }, false);
 
 
-  function resizeIt(id:string){
-      const iframeElem = document.getElementById(id) as HTMLIFrameElement;
-      return ()=>{
-          console.info(id, 'loaded');
-          // iframeElem.style.height = '600px';
+  function resizeIframeCb(evt: Event){
+    const iframeElem = evt.target as HTMLIFrameElement;
+    const id = iframeElem.id;
 
-          // while resized flag is not true...
-          const tellResize = ()=>{
-              if (resized[id] !== true) {
-                  iframeElem.contentWindow!.postMessage({msg:'giveMeSize', id:id}, '*'); // this is sometimes missed by subframe
-                  setTimeout(tellResize, 500);
-              };
-          };
-          tellResize();
-      }
+    const tellResize = ()=>{
+      if (resized[id] !== true) {
+        iframeElem.contentWindow!.postMessage({msg:'giveMeSize', id:id}, '*');
+        setTimeout(tellResize, 500);
+      };
+    };
+    tellResize();
   }
-  
-  
+
+
   for(let tweetElem of tweetList){ 
     let oldSrc:string = '';  // temp variable
     const alist = tweetElem.getElementsByTagName('a');  // list of 'a' tags in <blockquote class="twitter-tweet" />
@@ -84,33 +80,20 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
      */
     const newSrc=oldSrc.replace('twitter.com', nitterUrl).replace(/\?.*$/,'/embed');
     console.debug('replacing', oldSrc, 'with ', newSrc)
-  
-    /*
-    // create and initialize Iframe of nitter embed
-    let tiframe = document.createElement('iframe');
-    let id:string = `mod-tweet-iframe-${counter++}`;
-    tiframe.setAttribute('id', id);
-    tiframe.setAttribute('src', newSrc);
-    tiframe.setAttribute('class', 'twitter-tweet');
-    // tiframe.setAttribute('style', 'width:100%;');
-    tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%; height:600px');
-    tweetElem.replaceWith(tiframe);
-    // tiframe.onload = resizeIt(id);
-    tiframe.onload = resizeIt(id);  // this sometimes seem not to fire
-    */
-
 
     // create and initialize Iframe of nitter embed
-    let tiframe = document.createElement('iframe');
+    let tiframe = document.createElement('iframe') as HTMLIFrameElement;
     let id:string = `mod-tweet-iframe-${counter++}`;
+
     resized[id] = false;  // set initial state
-    tiframe.setAttribute('id', id);
+    tiframe.id = id;
     tiframe.setAttribute('class', 'twitter-tweet');
     tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%; height:600px; display:hidden !important;');
 
     tweetElem.replaceWith(tiframe);
-    tiframe.onload = resizeIt(id);  // this sometimes seem not to fire
-    tiframe.setAttribute('src', newSrc);
+    tiframe.onload = resizeIframeCb;  // this sometimes seem not to fire
+
+    tiframe.src = newSrc;
   }
 });
 
