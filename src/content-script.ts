@@ -42,15 +42,24 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
   
     console.debug('alist', alist);
   
-    for (let atag of alist){
-      const hrefStr = atag.getAttribute('href') as string;
-      console.debug('atag: ', atag);
+    /*
+     * Iterate through alist 
+     * do we really need to iterate?
+     */
+    // for (let atag of alist){
+    //   const hrefStr = atag.getAttribute('href') as string;
+    //   console.debug('atag: ', atag);
   
-      if( hrefStr.match(pattern) != null){
-        oldSrc = atag.getAttribute('href') as string;
-        console.debug('oldSrcmatch: ', oldSrc);
-      };
-    }
+    //   if( hrefStr.match(pattern) != null){
+    //     oldSrc = atag.getAttribute('href') as string;
+    //     console.debug('oldSrcmatch: ', oldSrc);
+    //   };
+    // }
+
+    /*
+     * this ought to be enough
+     */
+    oldSrc = alist[alist.length - 1].getAttribute('href')!;
   
     /*
     replace this: 'https://twitter.com/hoge/status/12312318492873490?refaskdfja;lksdjf'
