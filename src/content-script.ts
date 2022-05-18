@@ -9,48 +9,53 @@ var resized:Loaded = {};
 
 chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
   console.debug('read configs:', rcvd);
+
   const nitterUrl = ()=>{
     const nList = rcvd.nitterInstances as Array<string>;
     return nList[~~(Math.random()*nList.length)];
-    return rcvd.nitterInstances[0]
+    // return rcvd.nitterInstances[0]
   };
-  console.debug('now using: ', nitterUrl);
-
+  // console.debug('now using: ', nitterUrl);
 
   window.addEventListener("message", (event)=>{
       console.debug(event.data);
-  
+
       if (event.data.msg === 'loaded'){
           console.debug('firing loaded event');
       }
-  
+
       if (event.data.msg === 'resizeMe'){
           console.info('firing resizeMe Event');
-          const iframeElem = document.getElementById(event.data.id) as HTMLIFrameElement;
-          iframeElem.height = (8 + Number(event.data.height)).toString() + 'px';
+          const payload = event.data;
+          const targId = payload.id;
+          console.assert(targId !== undefined);
+
+          const iframeElem = document.getElementById(targId) as HTMLIFrameElement;
+          iframeElem.height = (8 + Number(payload.height)).toString() + 'px';
           iframeElem.style.display = '';
           iframeElem.style.visibility = '';
 
-          if (event.data.height === undefined){
+          if (payload.height === undefined){
             iframeElem.height=''
           };
 
           // raise resized frag now
-          resized[event.data.id] = true;
+          resized[targId] = true;
       }
   }, false);
 
 
   function resizeIframeCb(evt: Event){
     const iframeElem = evt.target as HTMLIFrameElement;
-    const id = iframeElem.id;
+    const targId = iframeElem.id;
+    console.assert(targId !== undefined);
 
     // iframeElem.style.display = '';
     // iframeElem.height = '600px';
 
     const tellResize = ()=>{
-      if (resized[id] !== true) {
-        iframeElem.contentWindow!.postMessage({msg:'giveMeSize', id:id}, '*');
+      if (resized[targId] !== true) {
+        iframeElem.contentWindow!.postMessage({msg:'askForResize', id:targId}, '*');
         setTimeout(tellResize, 500);
       };
     };
@@ -60,11 +65,12 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
 
   for(let tweetElem of tweetList){ 
     let oldSrc:string = '';  // temp variable
-    const alist = tweetElem.getElementsByTagName('a');  // list of 'a' tags in <blockquote class="twitter-tweet" />
-    // https://twitter.com/.*/status/.*
-  
+
+    // list of 'a' tags in <blockquote class="twitter-tweet" />
+    const alist = tweetElem.getElementsByTagName('a');
+
     console.debug('alist', alist);
-  
+
     /*
      * Iterate through alist 
      * do we really need to iterate?
@@ -73,7 +79,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     // for (let atag of alist){
     //   const hrefStr = atag.getAttribute('href') as string;
     //   console.debug('atag: ', atag);
-  
+
     //   if( hrefStr.match(pattern) != null){
     //     oldSrc = atag.getAttribute('href') as string;
     //     console.debug('oldSrcmatch: ', oldSrc);
@@ -84,7 +90,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
      * this ought to be enough
      */
     oldSrc = alist[alist.length - 1].getAttribute('href')!;
-  
+
     /*
     replace this: 'https://twitter.com/hoge/status/12312318492873490?refaskdfja;lksdjf'
     into this: 'https://nitter.pussthecat.org/hoge/status/12312318492873490/embed'
@@ -102,8 +108,10 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%;');
     tiframe.height='600px';
     tiframe.style.visibility='hidden !important';
+
     // tiframe.style.display='none';
     // tweetElem.replaceWith(tiframe);
+
     tiframe.onload = resizeIframeCb;  // this sometimes seem not to fire
     tiframe.src = newSrc;
     setTimeout(()=>{tweetElem.replaceWith(tiframe);}, 125*counter);

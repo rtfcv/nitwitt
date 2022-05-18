@@ -9,23 +9,23 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     if (!rcvd.nitterInstances.some((e:any)=>docLoc.includes(e))){return;}
 
     const giveEmSize = ()=>{
-            // // change min-height of media element
-            // var body_ = document.body;
-            // var html_ = document.documentElement;
-            // var height = Math.max(body_.scrollHeight,body_.offsetHeight,html_.clientHeight,html_.scrollHeight,html_.offsetHeight);
-            let height:number|undefined = undefined; // initialize
-            try{
-              // the item should have this id
-              const tlItem = document.getElementsByClassName('timeline-item');
+        // // change min-height of media element
+        // var body_ = document.body;
+        // var html_ = document.documentElement;
+        // var height = Math.max(body_.scrollHeight,body_.offsetHeight,html_.clientHeight,html_.scrollHeight,html_.offsetHeight);
+        let height:number|undefined = undefined; // initialize
+        try{
+            // the item should have this id
+            const tlItem = document.getElementsByClassName('timeline-item');
 
-              // this can error out too
-              height = tlItem[0].scrollHeight
-            }catch(e){
-              height = undefined;
-              console.log('something went wrong when getting height of timeline-item', e);
-            }
+            // this can error out too
+            height = tlItem[0].scrollHeight
+        }catch(e){
+            height = undefined;
+            console.log('something went wrong when getting height of timeline-item', e);
+        }
 
-            window.parent.postMessage({msg:'resizeMe', id:id, height:height}, '*');
+        window.parent.postMessage({msg:'resizeMe', id:id, height:height}, '*');
     };
 
     // const clean = (hoge:any)=>{return JSON.parse(JSON.stringify(hoge))}
@@ -33,7 +33,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
         const payload = event.data;
         console.info(payload);
 
-        if(payload.msg === 'giveMeSize'){
+        if(payload.msg === 'askForResize'){
             console.assert(id !== undefined);
             id = payload.id;
             giveEmSize();
