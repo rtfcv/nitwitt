@@ -9,7 +9,11 @@ var resized:Loaded = {};
 
 chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
   console.debug('read configs:', rcvd);
-  nitterUrl = rcvd.nitterInstances[0];
+  const nitterUrl = ()=>{
+    const nList = rcvd.nitterInstances as Array<string>;
+    return nList[~~(Math.random()*nList.length)];
+    return rcvd.nitterInstances[0]
+  };
   console.debug('now using: ', nitterUrl);
 
 
@@ -23,9 +27,13 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
       if (event.data.msg === 'resizeMe'){
           console.info('firing resizeMe Event');
           const iframeElem = document.getElementById(event.data.id) as HTMLIFrameElement;
-          iframeElem.style.height = (8 + Number(event.data.height)).toString() + 'px';
+          iframeElem.height = (8 + Number(event.data.height)).toString() + 'px';
           iframeElem.style.display = '';
-          if (event.data.height === undefined){iframeElem.style.height=''};
+          iframeElem.style.visibility = '';
+
+          if (event.data.height === undefined){
+            iframeElem.height=''
+          };
 
           // raise resized frag now
           resized[event.data.id] = true;
@@ -36,6 +44,9 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
   function resizeIframeCb(evt: Event){
     const iframeElem = evt.target as HTMLIFrameElement;
     const id = iframeElem.id;
+
+    // iframeElem.style.display = '';
+    // iframeElem.height = '600px';
 
     const tellResize = ()=>{
       if (resized[id] !== true) {
@@ -78,7 +89,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     replace this: 'https://twitter.com/hoge/status/12312318492873490?refaskdfja;lksdjf'
     into this: 'https://nitter.pussthecat.org/hoge/status/12312318492873490/embed'
      */
-    const newSrc=oldSrc.replace('twitter.com', nitterUrl).replace(/\?.*$/,'/embed');
+    const newSrc=oldSrc.replace('twitter.com', nitterUrl()).replace(/\?.*$/,'/embed');
     console.debug('replacing', oldSrc, 'with ', newSrc)
 
     // create and initialize Iframe of nitter embed
@@ -88,12 +99,14 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     resized[id] = false;  // set initial state
     tiframe.id = id;
     tiframe.setAttribute('class', 'twitter-tweet');
-    tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%; height:600px; display:hidden !important;');
-
-    tweetElem.replaceWith(tiframe);
+    tiframe.setAttribute('style', 'border-radius: 10px; border: 2px solid gray; width:100%;');
+    tiframe.height='600px';
+    tiframe.style.visibility='hidden !important';
+    // tiframe.style.display='none';
+    // tweetElem.replaceWith(tiframe);
     tiframe.onload = resizeIframeCb;  // this sometimes seem not to fire
-
     tiframe.src = newSrc;
+    setTimeout(()=>{tweetElem.replaceWith(tiframe);}, 125*counter);
   }
 });
 

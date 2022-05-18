@@ -8,20 +8,11 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
     const docLoc = document.location.toString();
     if (!rcvd.nitterInstances.some((e:any)=>docLoc.includes(e))){return;}
 
-    // const clean = (hoge:any)=>{return JSON.parse(JSON.stringify(hoge))}
-    const msgHandler=(event:any)=>{
-        const payload = event.data;
-        console.info(payload);
-
-        if(payload.msg === 'giveMeSize'){
+    const giveEmSize = ()=>{
             // // change min-height of media element
             // var body_ = document.body;
             // var html_ = document.documentElement;
             // var height = Math.max(body_.scrollHeight,body_.offsetHeight,html_.clientHeight,html_.scrollHeight,html_.offsetHeight);
-
-            id = payload.id;
-            console.assert(id !== undefined);
-
             let height:number|undefined = undefined; // initialize
             try{
               // the item should have this id
@@ -35,6 +26,18 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
             }
 
             window.parent.postMessage({msg:'resizeMe', id:id, height:height}, '*');
+    };
+
+    // const clean = (hoge:any)=>{return JSON.parse(JSON.stringify(hoge))}
+    const msgHandler=(event:any)=>{
+        const payload = event.data;
+        console.info(payload);
+
+        if(payload.msg === 'giveMeSize'){
+            console.assert(id !== undefined);
+            id = payload.id;
+            giveEmSize();
+            // window.onresize=giveEmSize;
         }
     }
     window.addEventListener("message", msgHandler);

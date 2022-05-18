@@ -11,15 +11,12 @@ import {
 //     }, ()=>{});
 // });
 //
-var nitterUrl = '';
+var nitterUrl = ()=>{return 'nitter.net';};
 
-readConfig((rcvd:any)=>{
-    nitterUrl = rcvd.nitterInstances[0];
-});
 
 const tabHook=(tabId:number, changeInfo:any, tabInfo:any)=>{
     if (tabInfo.url.includes('twitter.com/')){
-        let newUrl = tabInfo.url.replace(/http.?:\/\/.*\.?twitter.com\/?/,`https://${nitterUrl}/`);
+        let newUrl = tabInfo.url.replace(/http.?:\/\/.*\.?twitter.com\/?/,`https://${nitterUrl()}/`);
         newUrl = newUrl.replace(/\?.*$/, '');
         console.assert(tabInfo.url != newUrl);
 
@@ -33,14 +30,27 @@ const tabHook=(tabId:number, changeInfo:any, tabInfo:any)=>{
     };
 };
 
-if (chrome.tabs.onUpdated.hasListener(tabHook)){
-  chrome.tabs.onUpdated.removeListener(tabHook);
-};
-chrome.tabs.onUpdated.addListener(tabHook);
 
-function reloadConfigs(){
-    return true;
-}
+function reloadConfigs(){readConfig((rcvd:any)=>{
+    // nitterUrl = rcvd.nitterInstances[0];
+    nitterUrl = ()=>{
+      const nList = rcvd.nitterInstances as Array<string>;
+      return nList[~~(Math.random()*nList.length)];
+    };
+
+    if (chrome.tabs.onUpdated.hasListener(tabHook)){
+      chrome.tabs.onUpdated.removeListener(tabHook);
+    };
+    if(rcvd.blockTwitter){
+        chrome.tabs.onUpdated.addListener(tabHook);
+        chrome.declarativeNetRequest.updateEnabledRulesets({enableRulesetIds: ["blockTwitter"],});
+    }else{
+        chrome.tabs.onUpdated.removeListener(tabHook);
+        chrome.declarativeNetRequest.updateEnabledRulesets({disableRulesetIds: ["blockTwitter"],});
+    };
+
+});return true;}
+reloadConfigs();
 
 
 chrome.runtime.onMessage.addListener(function (msgMap, sender, sendResponse) {

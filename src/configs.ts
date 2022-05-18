@@ -8,13 +8,15 @@ function sanitizeConfigMap(input:any) {
     };
 
     var config = {
-        nitterInstances:[]
+        nitterInstances:[],
+        blockTwitter:true
     };
 
     /** theme: str
      * accepts: dark, light, business, luxury, black, ... and much more
      */
     config.nitterInstances = tCheck(input.nitterInstances, ['nitter.fly.dev']);
+    config.blockTwitter = tCheck(input.blockTwitter, true);
     return config;
 }
 
