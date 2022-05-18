@@ -1,4 +1,5 @@
 import {
+    configObj,
     readConfig,
     writeConfig,
 } from './configs'
@@ -16,14 +17,17 @@ var nitterUrl = ()=>{return 'nitter.net';};
 
 const tabHook=(tabId:number, changeInfo:any, tabInfo:any)=>{
     if (tabInfo.url.includes('twitter.com/')){
+        readConfig((config:configObj)=>{
+            if(!config.blockTwitter){return;};
+        });
+
         let newUrl = tabInfo.url.replace(/http.?:\/\/.*\.?twitter.com\/?/,`https://${nitterUrl()}/`);
         newUrl = newUrl.replace(/\?.*$/, '');
-        console.assert(tabInfo.url != newUrl);
+        console.assert(tabInfo.url !== newUrl);
 
         chrome.tabs.update(tabId, {url: newUrl},).then(inp=>{
             console.debug('updated tab', inp);
         });
-
         console.info('a twitter tab', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo}, '\nopening:', newUrl);
     }else{
         console.debug('tabInfo', {tabId: tabId, changeInfo: changeInfo, tabInfo: tabInfo});

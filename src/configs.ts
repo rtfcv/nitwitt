@@ -1,3 +1,10 @@
+
+interface configObj {
+        nitterInstances:Array<string>,
+        blockTwitter:boolean
+};
+
+
 function sanitizeConfigMap(input:any) {
     if (typeof input === 'undefined'){
         input = {};
@@ -7,16 +14,10 @@ function sanitizeConfigMap(input:any) {
         return (typeof targetVariable === typeof defaultValue) ? targetVariable : defaultValue;
     };
 
-    var config = {
-        nitterInstances:[],
-        blockTwitter:true
+    let config:configObj = {
+      nitterInstances: tCheck(input.nitterInstances, ['nitter.fly.dev']),
+      blockTwitter: tCheck(input.blockTwitter, true),
     };
-
-    /** theme: str
-     * accepts: dark, light, business, luxury, black, ... and much more
-     */
-    config.nitterInstances = tCheck(input.nitterInstances, ['nitter.fly.dev']);
-    config.blockTwitter = tCheck(input.blockTwitter, true);
     return config;
 }
 
@@ -53,6 +54,7 @@ function writeConfig(config: object, callbackFunc: any) {
 
 
 export {
+  configObj,
   readConfig,
   writeConfig,
 };
