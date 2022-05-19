@@ -31,7 +31,10 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
           console.assert(targId !== undefined);
 
           const iframeElem = document.getElementById(targId) as HTMLIFrameElement;
-          iframeElem.height = (8 + Number(payload.height)).toString() + 'px';
+          const height = Number(payload.height);
+          if (height === 0){return;};
+
+          iframeElem.height = (8 + height).toString() + 'px';
           iframeElem.style.display = '';
           iframeElem.style.visibility = '';
 
