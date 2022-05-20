@@ -34,7 +34,7 @@ chrome.runtime.sendMessage({msg:'readConfig'}).then((rcvd)=>{
         console.info(payload);
 
         if(payload.msg === 'askForResize'){
-            console.assert(id !== undefined);
+            console.assert(payload.id !== undefined);
             id = payload.id;
             giveEmSize();
             // window.onresize=giveEmSize;

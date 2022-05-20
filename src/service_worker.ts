@@ -21,7 +21,18 @@ const tabHook=(tabId:number, changeInfo:any, tabInfo:any)=>{
             if(!config.blockTwitter){return;};
         });
 
-        let newUrl = tabInfo.url.replace(/http.?:\/\/.*\.?twitter.com\/?/,`https://${nitterUrl()}/`);
+        let oldUrl = tabInfo.url as string;
+
+        // detect redirect
+        // chrome.windows.create({"url": url, "incognito": true});
+        const grup = oldUrl.match(new RegExp(String.raw`https://(.*?)twitter.com/.*?/redirect\?.*?url=(?<url>.*)`))!;
+
+        if ( grup!==undefined && grup.groups!==undefined ){
+            console.info('redirect detected in: ', oldUrl);
+            oldUrl = decodeURIComponent( grup.groups.url );
+        }
+
+        let newUrl = oldUrl.replace(/http.?:\/\/.*\.?twitter.com\/?/,`https://${nitterUrl()}/`);
         newUrl = newUrl.replace(/\?.*$/, '');
         console.assert(tabInfo.url !== newUrl);
 
