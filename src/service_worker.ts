@@ -25,9 +25,9 @@ const tabHook=(tabId:number, changeInfo:any, tabInfo:any)=>{
 
         // detect redirect
         // chrome.windows.create({"url": url, "incognito": true});
-        const grup = oldUrl.match(new RegExp(String.raw`https://(.*?)twitter.com/.*?/redirect\?.*?url=(?<url>.*)`))!;
+        const grup = oldUrl.match(new RegExp(String.raw`https://(.*?)twitter.com/.*?/redirect\?.*?url=(?<url>.*)`));
 
-        if ( grup!==undefined && grup.groups!==undefined ){
+        if (grup !== null && grup.groups !== undefined ){
             console.info('redirect detected in: ', oldUrl);
             oldUrl = decodeURIComponent( grup.groups.url );
         }
